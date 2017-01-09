@@ -355,13 +355,15 @@ The base directory &may; have any name.
 <section title="Bag Declaration: bagit.txt" anchor="sec-bag-decl">
 
 <t>
-The "bagit.txt" tag file &must; consist of exactly two lines:
+The "bagit.txt" tag file &must; consist of exactly four lines:
 </t>
 
 <figure>
   <artwork>
 BagIt-Version: M.N
 Tag-File-Character-Encoding: UTF-8
+Payload-File-Count: 1
+Payload-Byte-Count: 0
   </artwork>
   <postamble>
     M.N identifies the BagIt major (M) and minor (N) version numbers,
@@ -369,7 +371,23 @@ Tag-File-Character-Encoding: UTF-8
 
     The bag declaration &must; be encoded in UTF-8, and &must-not; contain a
     byte-order mark (BOM) <xref target="RFC3629"/>.
+
+    Payload-File-Count identifies how many total payload files.
+    Payload-Byte-Count identifies the total number of octets (8-bit bytes) 
+    across all payload file content
   </postamble>
+</figure>
+
+<figure>
+    <preamble>BagIt File ABNF</preamble>
+    <artwork type="abnf" xml:space="preserve"><![CDATA[
+bagit.txt  = version encoding file-count byte-count
+version    = "BagIt-Version:" SP 1*DIGIT "." 1*DIGIT newline
+encoding   = "Tag-File-Character-Encoding:" SP 1*CHAR newline
+file-count = "Payload-File-Count:" SP 1*DIGIT newline
+byte-count = "Payload-Byte-Count:" SP 1*DIGIT
+newline    = CR / LF / CRLF
+    ]]></artwork>
 </figure>
 
 <t>
@@ -539,31 +557,6 @@ key           = 1*alpha-numeric
 value         = 1*(1*alpha-numeric ending 1*WSP 1*alpha-numeric)
 alpha-numeric = ALPHA / DIGIT
 ending        = CR / LF / CRLF
-]]></artwork>
-</figure>
-
-<t>
-An implementation &should; add the optional "Payload-Oxum" element for the
-purpose of quickly detecting incomplete bags before performing checksum
-validation. This is strictly an optimization and implementations &must; perform
-the standard checksum validation process before proclaiming a bag to be valid.
-This element &must-not; be present more than once and, if present, &must;
-conform to this format:
-</t>
-
-<t hangText="Payload-Oxum">
-    The "octet-stream sum" of the payload is a pair of two numbers in the form
-    "<spanx style="emph">OctetCount</spanx>.<spanx style="emph">StreamCount</spanx>",
-    where <spanx style="emph">OctetCount</spanx> is the total number of octets
-    (8-bit bytes) across all payload file content and
-    <spanx style="emph">StreamCount</spanx> is the total number of payload
-    files.
-</t>
-
-<figure>
-  <preamble>Payload-Oxum ABNF</preamble>
-  <artwork type="abnf" xml:space="preserve"><![CDATA[
-  payload-oxum = 1*DIGIT "." 1*DIGIT
 ]]></artwork>
 </figure>
 
