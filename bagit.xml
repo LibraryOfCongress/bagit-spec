@@ -581,6 +581,20 @@ ending        = CR / LF / CRLF
          from microfilm and are...
   </artwork>
 </figure>
+
+<t hangText="Payload-Oxum">
+  Payload-Oxum is now deprecated. It has been replaced with other fields 
+  in the bagit.txtLegacy "Payload-Oxum" was once stored here. Because it 
+  had the restiction of See <xref target="sec-bag-decl" />
+
+  For maintainers that used payload-oxum the old definition is: 
+  The "octet-stream sum" of the payload is a pair of two numbers in the form
+  "<spanx style="emph">OctetCount</spanx>.<spanx style="emph">StreamCount</spanx>",
+  where <spanx style="emph">OctetCount</spanx> is the total number of octets
+  (8-bit bytes) across all payload file content and
+  <spanx style="emph">StreamCount</spanx> is the total number of payload files.
+</t>
+
 </section> <!-- /Bag Metadata -->
 
 <section title="Other Tag Files" anchor="sec-other-tag-files">
