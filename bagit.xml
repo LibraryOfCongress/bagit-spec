@@ -355,33 +355,42 @@ The base directory &may; have any name.
 <section title="Bag Declaration: bagit.txt" anchor="sec-bag-decl">
 
 <t>
-The "bagit.txt" tag file &must; consist of:
+  The "bagit.txt" tag file &must; be encoded in UTF-8 and &must-not; contain a byte-order 
+  mark (BOM) see <xref target="RFC3629" />. 
+  
+  It &must; contain:
+  <list style="numbers">
+    <t>"BagIt-Version" - identifies the BagIt major and minor version 
+      numbers in the form of [MAJOR].[MINOR]
+    </t>
+    <t>"Tag-File-Character-Encoding" - the character set encoding used by 
+      the tag files. 
+    </t>
+  </list>
+  
+  Additionally it &may; contain:
+  <list style="numbers">
+    <t>
+      Payload-File-Count - identifies the total umber of payload files.
+    </t>
+    <t>
+      Payload-Byte-Count - identifies the total number of octets (8-bit bytes)
+    </t>
+  </list>
 </t>
 
 <figure>
+  <preamble>A example bagit.txt file</preamble>
   <artwork>
-BagIt-Version: M.N
+BagIt-Version: 1.0
 Tag-File-Character-Encoding: UTF-8
 Payload-File-Count: 1
 Payload-Byte-Count: 0
   </artwork>
-  <postamble>
-    M.N identifies the BagIt major (M) and minor (N) version numbers,
-    and UTF-8 identifies the character set encoding used by the tag files.
-
-    The bag declaration &must; be encoded in UTF-8, and &must-not; contain a
-    byte-order mark (BOM) <xref target="RFC3629"/>.
-
-    "bagit.txt" tag file &may; omit Payload-File-Count and Payload-Byte-Count.
-
-    Payload-File-Count identifies the total number of payload files.
-    Payload-Byte-Count identifies the total number of octets (8-bit bytes) 
-    across all payload file content
-  </postamble>
 </figure>
 
 <figure>
-    <preamble>BagIt File ABNF</preamble>
+    <preamble>"bagit.txt" ABNF</preamble>
     <artwork type="abnf" xml:space="preserve"><![CDATA[
 bagit.txt  = version encoding [file-count byte-count]
 version    = "BagIt-Version:" SP 1*DIGIT "." 1*DIGIT newline
