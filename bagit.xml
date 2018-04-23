@@ -455,7 +455,8 @@ manifest-sha1.txt
               <t>
                 If a <spanx style="emph">filename</spanx> includes a newline
                 (LF), a carriage return (CR),
-                or carriage return plus newline (CRLF) it &must; be
+                carriage return plus newline (CRLF) or
+                percent (%), those characters (and only those) &must; be
                 percent-encoded following <xref target="RFC3986"/>.
               </t>
             </list>
@@ -1139,7 +1140,7 @@ filename              = "data/"
 unreserved            = ALPHA / DIGIT / "-" / "." / "_" / "~"
 sub-delims            = "!" / "$" / "&" / DQUOTE / "'" / "(" / ")" /
                         "*" / "+" / "," / ";" / "=" / "/"              
-pct-encoded           = "%" HEXDIG HEXDIG
+pct-encoded           = "%0D" / "%0A" / "%25"
 ending                = CR / LF / CRLF
 ]]></artwork>
         </figure>
