@@ -1140,7 +1140,7 @@ filename              = "data/"
 unreserved            = ALPHA / DIGIT / "-" / "." / "_" / "~"
 sub-delims            = "!" / "$" / "&" / DQUOTE / "'" / "(" / ")" /
                         "*" / "+" / "," / ";" / "=" / "/"              
-pct-encoded           = "%0D" / "%0A" / "%25"
+pct-encoded           = "%0D" / "%0d" / "%0A" / "%0a" / "%25"
 ending                = CR / LF / CRLF
 ]]></artwork>
         </figure>
