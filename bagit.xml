@@ -480,8 +480,9 @@ placeholder file with a name such as ".keep".
             A bag &may; contain one or more tag manifests, in which case each tag manifest &must; list the same set of tag files.
           </t>
           <t>
-            Each tag manifest &must; list every payload manifest, but &must-not; list any tag manifests.
-            Each tag manifest &should; list the remaining tag files present in the bag.
+            Each tag manifest &must; list every payload manifest.
+            Each tag manifest &must-not; list any tag manifests,
+            but &should; list the remaining tag files present in the bag.
           </t>
           <t>
             A tag manifest file &must; have a name of the form
