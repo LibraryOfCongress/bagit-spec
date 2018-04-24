@@ -702,9 +702,11 @@ Internal-Sender-Description: Uncompressed greyscale TIFFs created
           the text tag file format described below.
         </t>
         <t>
-          Text tag files are line-oriented, and each line (including the last) &must; be terminated
+          Text tag files are line-oriented, and each line &must; be terminated
           by a newline (LF), a carriage return (CR), or carriage return plus
-          newline (CRLF). Text tag file names &must; end in the extension
+	  newline (CRLF). It is &recommended; that the last line in a tag
+	  file also ends with LF, CR or CRLF.
+	  Text tag file names &must; end in the extension
           ".txt".
         </t>
         <t>
