@@ -734,7 +734,7 @@ of a checksum are outside the scope of this document.
 <t>
 To avoid future ambiguity, the checksum algorithm &should; be registered
 in IANA's "Named Information Hash Algorithm Registry" <xref target="ni-registry" />
-according to <xref target="RFC6920"/>, but MAY for backwards compatibility also be the
+according to <xref target="RFC6920"/>, but &may; for backwards compatibility also be the
 MD5 <xref target="RFC1321"/> or SHA-1 <xref target="RFC3174"/>.
 </t>
         <t>
