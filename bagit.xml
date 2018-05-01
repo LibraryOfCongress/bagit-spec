@@ -453,10 +453,10 @@ manifest-sha1.txt
               <t>There is no limitation on the length of a pathname.</t>
               <t>The payload manifest &must-not; reference files outside the payload directory.</t>
               <t>
-                If a <spanx style="emph">filename</spanx> includes a newline
+                If a <spanx style="emph">filename</spanx> includes a line feed
                 (LF), a carriage return (CR),
-                carriage return plus newline (CRLF) or
-                percent (%), those characters (and only those) &must; be
+                carriage return plus line feed (CRLF) or
+                percent sign (%), those characters (and only those) &must; be
                 percent-encoded following <xref target="RFC3986"/>.
               </t>
             </list>
