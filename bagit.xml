@@ -228,7 +228,7 @@ BagIt differs from serialized archive formats such as MIME, TAR, or ZIP
 in two general areas:
 
 <list style="numbers"><t>
-    Strong integrity assurances. The format supports only cryptographic-quality
+    Strong integrity assurances. The format supports cryptographic-quality
     hash algorithms (see <xref target="bag-checksum-algorithms"/>) and allows
     for in-place upgrades to add additional manifests using stronger algorithms
     without breaking backwards compatibility.
@@ -280,25 +280,29 @@ document are to be interpreted as described in <xref target="RFC2119"/>.
   </t>
             <t hangText="bag checksum algorithm">
     The name of a cryptographic checksum algorithm which has been normalized
-    for use in a manifest or tag manifest file name (e.g. "SHA-1" becomes
-    "sha1") as described in <xref target="bag-checksum-algorithms"/>.
+    for use in a manifest or tag manifest file name (e.g. "sha512")
+    as described in <xref target="bag-checksum-algorithms"/>.
   </t>
             <t hangText="payload">
-    The data encapsulated by the bag. The contents of the payload
+    The data encapsulated by the bag as a set of named files, which may be organized in sub-directories. The contents of the payload files
     are opaque to this specification, and, with respect to BagIt processing,
-    are always considered as a sequence of uninterpreted octets.
+    are always considered as sequences of uninterpreted octets.
     See <xref target="sec-payload-dir"/>.
   </t>
             <t hangText="tag directory">
     A directory that contains one or more tag files.
   </t>
             <t hangText="tag file">
-    A file which contains metadata. The specification defines two standard tag
-    files: tag manifests, which describe other tag files
-    <xref target="sec-tag-manifest"/>, and the "bag-info.txt" file containing
-    human-meaningful metadata <xref target="sec-bag-info"/>.
+    A file which contains metadata about the bag or its payload.
+    This specification defines the standard
+    BagIt tag files: 
+    the bag declaration in "bagit.txt" <xref target="sec-bag-decl"/>,
+    payload manifests <xref target="sec-payload-manifest"/>,
+    tag manifests <xref target="sec-tag-manifest"/>, 
+    bag metadata in "bag-info.txt" <xref target="sec-bag-info"/>,
+    and remote payload in "fetch.txt" <xref target="sec-fetch-file"/>.
 
-    The specification also allows other arbitrary tag files as described in
+    This specification also allows other arbitrary tag files as described in
     <xref target="sec-other-tag-files"/>.
   </t>
             <t hangText="complete">
@@ -339,7 +343,7 @@ in arbitrary file hierarchies and &may; have
 any name that is not reserved for a file or directory in this specification.
 </t>
       <t>
-The base directory &may; have any name.
+The base directory can have any name.
 </t>
       <figure>
         <artwork>
@@ -392,8 +396,9 @@ Tag-File-Character-Encoding: UTF-8
             The files under the payload directory are called payload files, or the payload.
             Each payload file is treated as an opaque octet stream when verifying file
             correctness.
-            Any sub-directory structure within the payload &must-not; be changed but is
-            otherwise ignored for purposes relating to this specification.
+            Payload files &may; be organized in arbitrary sub-directory structures
+            within the payload directory, however for the purpose of this specification
+            such sub-directory structures and filenames have no given meaning.
           </t>
         </section>
         <!-- /Payload Directory -->
@@ -427,8 +432,8 @@ Tag-File-Character-Encoding: UTF-8
           <figure>
             <preamble>Example payload manifest filenames</preamble>
             <artwork>
-manifest-md5.txt
-manifest-sha1.txt
+manifest-sha256.txt
+manifest-sha512.txt
   </artwork>
           </figure>
           <t>
@@ -493,8 +498,8 @@ placeholder file with a name such as ".keep".
           <figure>
             <preamble>Example tag manifest filenames:</preamble>
             <artwork>
-tagmanifest-md5.txt
-tagmanifest-sha1.txt
+tagmanifest-sha256.txt
+tagmanifest-sha512.txt
   </artwork>
           </figure>
           <t>
@@ -516,21 +521,27 @@ As a result, no <spanx style="emph">filename</spanx> listed in a tag manifest be
             metadata elements &must; be preserved.
           </t>
           <t>
-            A metadata element &must; consist of a label, a colon, at least one
-            linear whitespace character, and a value. The label &may; contain
-            linear whitespace characters, but &must-not; be preceded by
-            linear whitespace. It is &recommended; that
-            lines not exceed 79 characters in length. Long values &may; be
-            continued onto the next line by inserting a newline (LF), a carriage
-            return (CR), or carriage return plus newline (CRLF) and indenting
-            the next line with linear white space (spaces or tabs).
+            A metadata element &must; consist of a label, a colon ":", a single
+            linear whitespace character (space or tab), and a value, terminated with a newline (CR), carriage return (LF) or 
+            carriage return plus newline (CRLF).
           </t>
           <t>
-            For BagIt 1.0, the colon separating the key from the value &must; be
-            followed by a single linear whitespace character. For compatibility
-            with previous versions, implementations &must; accept multiple
-            linear whitespace before and after the colon when the bag version is
-            earlier than 1.0.
+            The label &must-not; contain colon (:), newlines (CR) or carriage returns (LF). 
+            The label &may; contain linear whitespace characters, but &must-not; start or
+            end with whitespace. 
+          </t> 
+          <t>
+            It is &recommended; that lines not exceed 79 characters in length. Long values &may; be
+            continued onto the next line by inserting a newline (LF), a carriage
+            return (CR), or carriage return plus newline (CRLF) and indenting
+            the next line with one or more linear white space (spaces or tabs).
+            Except for linebreaks such padding does not form part of the value.
+          </t>
+          <t>
+            Implementations wishing to support previous BagIt versions 
+            &must; accept multiple linear whitespace before and after the 
+            colon when the bag version is earlier than 1.0; such whitespace 
+            does not form part of the label or value.
           </t>
           <t>
             The following are reserved metadata elements. The use of these reserved
@@ -801,6 +812,8 @@ A <spanx style="emph">valid</spanx> bag &must; meet the following requirements:
           This is the layout of a basic bag containing an image and a companion
           OCR file. Lines of file content are shown with added parentheses to
           indicate each complete line.
+          For brevity this example uses the algorithm "md5"
+          rather than the recommended "sha512".
         </t>
 
         <figure>
@@ -832,6 +845,8 @@ myfirstbag/
           files listed in the payload manifests prior to validation. Lines of
           file content are shown with added parentheses to indicate each
           complete line.
+          For brevity this example uses the algorithm "md5"
+          rather than the recommended "sha512".
         </t>
 
         <figure>
@@ -850,7 +865,8 @@ highsmith-tahoe/
 |    (Tag-File-Character-Encoding: UTF-8                           )
 |
 |   bag-info.txt
-|    (Source-URL: https://www.loc.gov/resource/highsm.23364/       )
+|    (Internal-Sender-Description: Download link found at          )
+|    (  https://www.loc.gov/resource/highsm.23364/                 )
  </artwork>
         </figure>
       </section>
@@ -870,7 +886,7 @@ highsmith-tahoe/
           special directory characters.
         </t>
         <t>
-          For example, a maliciously crafted "tagmanifest-md5.txt" file might
+          For example, a maliciously crafted "tagmanifest-sha512.txt" file might
           contain entries which begin with a path character such as "/", "..",
           or a "~username" home directory reference in an attempt to cause a
           naive implementation to leak or overwrite targeted files on a POSIX
@@ -1190,7 +1206,7 @@ ending     = CR / LF / CRLF
 BagIt owes much to many thoughtful contributors and reviewers, including
 Stephen Abrams, Mike Ashenfelder, Dan Chudnov, Dave Crocker, Brad Hards, Scott Fisher, Keith
 Johnson, Erik Hetzner, Leslie Johnston, David Loy, Mark Phillips, Tracy Seneca,
-Brian Tingle, Adam Turoff, and Jim Tuttle.
+Brian Tingle, Adam Turoff, Jim Tuttle, and Stian Soiland-Reyes.
 </t>
       <section title="IANA Considerations">
         <t>
