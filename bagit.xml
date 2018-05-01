@@ -734,7 +734,7 @@ of a checksum are outside the scope of this document.
 <t>
 To avoid future ambiguity, the checksum algorithm &should; be registered
 in IANA's "Named Information Hash Algorithm Registry" <xref target="ni-registry" />
-according to <xref target="RFC6920"/>, but MAY for backwards-compatibility also be the
+according to <xref target="RFC6920"/>, but MAY for backwards compatibility also be the
 MD5 <xref target="RFC1321"/> or SHA-1 <xref target="RFC3174"/>.
 </t>
         <t>
@@ -753,7 +753,7 @@ mapping common algorithm names to normalized names:
   SHA-256 and SHA-512 algorithms <xref target="RFC6234"/> and &should; enable
   SHA-512 by default when creating new bags.
 
-  For backwards-compatibility implementers &should; support
+  For backwards compatibility implementers &should; support
   MD5 <xref target="RFC1321"/> and SHA-1 <xref target="RFC3174"/>.
 
   Implementers are encouraged to simplify the process of adding additional
