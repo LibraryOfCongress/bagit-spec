@@ -738,8 +738,8 @@ according to <xref target="RFC6920"/>, but &may; for backwards compatibility als
 MD5 <xref target="RFC1321"/> or SHA-1 <xref target="RFC3174"/>.
 </t>
         <t>
-The name of the checksum algorithm &must; be normalized
-for use in the manifest's filename by lowercasing the common name of the algorithm and
+The name of the checksum algorithm &must; be normalized for use in the
+manifest's filename by lowercasing the common name of the algorithm and
 removing all non-alphanumeric characters. Following is a partial list
 mapping common algorithm names to normalized names:
           <list style="symbols">
