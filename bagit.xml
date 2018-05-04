@@ -494,6 +494,9 @@ placeholder file with a name such as ".keep".
             the format described in <xref target="bag-checksum-algorithms"/>
             specifying the bag checksum algorithm used in that manifest.
           </t>
+          <t>
+            Tag manifests &should; use the same algorithms as for the payload manifests in the bag.
+          </t>
           <figure>
             <preamble>Example tag manifest filenames:</preamble>
             <artwork>
