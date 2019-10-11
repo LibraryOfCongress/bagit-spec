@@ -30,7 +30,7 @@
      ipr="trust200902">
   <front>
     <title abbrev="BagIt">
-   The BagIt File Packaging Format (V1.0)
+   The BagIt File Packaging Format (V2.0)
   </title>
     <author initials="J." surname="Kunze" fullname="John A. Kunze">
       <organization>
@@ -78,9 +78,12 @@
       </address>
     </author>
     <author initials="J." surname="Scancella" fullname="John Scancella">
+    <organization>
+        Department of Defense
+    </organization>
       <address>
         <email>john.scancella@gmail.com</email>
-      </address>
+</address>
     </author>
     <author initials="C." surname="Adams" fullname="Chris Adams">
       <organization>
@@ -231,18 +234,17 @@ Ghent University, New York University, and the University of California.
     <!-- /Introduction -->
     <section title="Structure">
       <t>
-  A bag MUST consist of a base directory containing the following:
+  A bag MUST consist of a .bagit directory containing the following:
 </t>
       <t>
         <list style="numbers">
           <t>a set of required and optional tag files (see <xref target="sec-optional-elements"/>);</t>
-          <t>a subdirectory named "data", called the payload directory (see
-	  <xref target="sec-payload-dir"/>); and</t>
+    <t>and</t>
           <t>a set of optional tag directories.</t>
         </list>
       </t>
       <t>
-The tag files in the base directory consist of one or more files named
+        The tag files in the .bagit directory consist of one or more files named
 "manifest-<spanx style="emph">algorithm</spanx>.txt"
 (see Sections <xref target="sec-payload-manifest" format="counter"/> and
 <xref target="bag-checksum-algorithms" format="counter"/>),
@@ -260,54 +262,59 @@ The base directory can have any name, as illustrated by the figure below.
         <artwork>
       &lt;base directory&gt;/
       |
-      +-- bagit.txt
+      +-- [payload files]
       |
-      +-- manifest-&lt;algorithm&gt;.txt
-      |
-      +-- [additional tag files]
-      |
-      +-- data/
-      |     |
-      |     +-- [payload files]
-      |
-      +-- [tag directories]/
+      +-- .bagit/
             |
-            +-- [tag files] </artwork>
+            +-- bagit.txt
+            |
+      +-- manifest-&lt;algorithm&gt;.txt
+            |
+            +-- [additional tag files]
+      |
+            +-- [tag directories]/
+                 |
+                 +-- [tag files] </artwork>
       </figure>
       <section title="Required Elements" anchor="sec-required-elements">
         <section title="Bag Declaration: bagit.txt" anchor="sec-bag-decl">
           <t>
-            The "bagit.txt" tag file MUST consist of exactly two lines in this order:
+            The "bagit.txt" tag file MUST consist of exactly three lines in this order:
           </t>
           <figure>
             <artwork>
 BagIt-Version: M.N
-Tag-File-Character-Encoding: ENCODING </artwork>
+Tag-File-Character-Encoding: ENCODING 
+Payload-Oxum: OCTETSTREAM_SUM</artwork>
             <postamble>
               <spanx style="emph">M.N</spanx> identifies the BagIt major (M) and minor (N) version numbers.
               <spanx style="emph">ENCODING</spanx> identifies the character set encoding used by the remaining tag files.
+              <spanx style="emph">OCTETSTREAM_SUM</spanx> intended for the purpose of quickly detecting incomplete bags 
+        before performing checksum validation. This is strictly an optimization, and implementations MUST perform
+              the standard checksum validation process before proclaiming a bag to be valid.
+              This element MUST be in the form 
+        "<spanx style="emph">OctetCount</spanx>.<spanx style="emph">StreamCount</spanx>",
+              where <spanx style="emph">OctetCount</spanx> is the total number of
+              octets (8-bit bytes) across all payload file content and
+              <spanx style="emph">StreamCount</spanx> is the total number of
+              payload files.
 
-              <spanx style="emph">ENCODING</spanx> SHOULD
-              be <spanx style="verb">UTF-8</spanx>, but
-              for backwards compatibility it MAY be any
-              other encoding registered in <xref target="cs-registry"/>.
+              <spanx style="emph">ENCODING</spanx> MUST
+              be <spanx style="verb">UTF-8</spanx>
 
               The bag declaration itself MUST be encoded in UTF-8 and MUST NOT contain a
               Byte Order Mark (BOM) <xref target="RFC3629"/>.
             </postamble>
           </figure>
           <t>
-            The number for this version of BagIt is "1.0".
+            The number for this version of BagIt is "2.0".
           </t>
         </section>
         <!-- /Bag Declaration -->
-        <section title="Payload Directory: data/" anchor="sec-payload-dir">
-          <t>
-            The base directory MUST contain a subdirectory named "data".
-          </t>
+        <section title="Payload Directory: /" anchor="sec-payload-dir">
           <t>
             The payload directory contains the arbitrary digital content within the bag.
-            The files under the payload directory are called payload files, or the payload.
+            The files under the base directory are called payload files, or the payload.
             Each payload file is treated as an opaque octet stream when verifying file
             correctness.
             Payload files MAY be organized in arbitrary subdirectory structures
@@ -443,7 +450,7 @@ As a result, no <spanx style="emph">filepath</spanx> listed in a tag manifest be
           <t>
             A metadata element MUST consist of a label, a colon ":", a single
             linear whitespace character (space or tab), and a value that is
-	    terminated with an LF, a CR, or a CRLF.
+      terminated with an LF, a CR, or a CRLF.
           </t>
           <t>
             The label MUST NOT contain a colon (:), LF, or CR.
@@ -500,29 +507,19 @@ As a result, no <spanx style="emph">filepath</spanx> listed in a tag manifest be
           <t hangText="Bag-Size:">
               The size or approximate size of the bag being transferred, followed
               by an abbreviation such as MB (megabytes), GB (gigabytes), or
-	      TB (terabytes): for example,
+        TB (terabytes): for example,
               42600 MB, 42.6 GB, or .043 TB.  Compared to Payload-Oxum (described
               next), Bag-Size is intended for human consumption.
               This metadata element SHOULD NOT be repeated.
           </t>
-          <t hangText="Payload-Oxum:">
-              The "octetstream sum" of the payload, which is intended for the
-              purpose of quickly detecting incomplete bags before performing checksum
-              validation. This is strictly an optimization, and implementations MUST perform
-              the standard checksum validation process before proclaiming a bag to be valid.
-              This element MUST NOT be present more than once and, if present, MUST
-              be in the form "<spanx style="emph">OctetCount</spanx>.<spanx style="emph">StreamCount</spanx>",
-              where <spanx style="emph">OctetCount</spanx> is the total number of
-              octets (8-bit bytes) across all payload file content and
-              <spanx style="emph">StreamCount</spanx> is the total number of
-              payload files.
-              This metadata element MUST NOT be repeated.
+    <t hangText="Payload-Oxum:">
+              Deprecated. This is now contained in the bagit.txt file and its use in the bag-info.txt should be ignored.
           </t>
           <t hangText="Bag-Group-Identifier:">
               A sender-supplied identifier for the set, if any, of bags
               to which it logically belongs.
               This identifier SHOULD be unique across the sender's content,
-	      and if it is recognizable as belonging to a globally unique scheme, the receiver
+        and if it is recognizable as belonging to a globally unique scheme, the receiver
               SHOULD make an effort to honor the reference to it.
               This metadata element SHOULD NOT be repeated.
           </t>
@@ -560,7 +557,6 @@ External-Description: Uncompressed greyscale TIFF images from the
       FOO papers colle...
 Bagging-Date: 2008-01-15
 External-Identifier: university_foo_001
-Payload-Oxum: 279164409832.1198
 Bag-Group-Identifier: university_foo
 Bag-Count: 1 of 15
 Internal-Sender-Identifier: /storage/images/foo
@@ -570,7 +566,10 @@ Internal-Sender-Description: Uncompressed greyscale TIFFs created
         </section>
 
         <section title="Fetch File: fetch.txt" anchor="sec-fetch-file">
-
+         
+    <t> 
+            This tag file is now deprecated and may be removed in a future version of bagit.
+    </t>
           <t>
             For reasons of efficiency, a bag MAY be sent with a list of files to be
             fetched and added to the payload before it can meaningfully be checked
@@ -614,7 +613,7 @@ Internal-Sender-Description: Uncompressed greyscale TIFFs created
             three values, and any such characters in the <spanx style="emph">url</spanx>
             MUST be percent-encoded <xref target="RFC3986"/>.
             If <spanx style="emph">filename</spanx> includes an LF, a CR, 
-	    a CRLF, or a percent sign (%), those characters (and only those) MUST be
+      a CRLF, or a percent sign (%), those characters (and only those) MUST be
             percent-encoded as described in <xref target="RFC3986"/>.
             There is no
             limitation on the length of any of the fields in the fetch file.
@@ -746,56 +745,11 @@ A <spanx style="emph">valid</spanx> bag MUST meet the following requirements:
 
         <figure>
           <artwork>
-myfirstbag/
-|
-|   manifest-md5.txt
-|    (49afbd86a1ca9f34b677a3f09655eae9 data/27613-h/images/q172.png)
-|    (408ad21d50cef31da4df6d9ed81b01a7 data/27613-h/images/q172.txt)
-|
-|   bagit.txt
-|    (BagIt-version: 1.0                                           )
-|    (Tag-File-Character-Encoding: UTF-8                           )
-|
-\--- data/
-     |
-     |   27613-h/images/q172.png
-     |    (... image bytes ...                                     )
-     |
-     |   27613-h/images/q172.txt
-     |    (... OCR text ...                                        )
-     .... </artwork>
+    TODO
+    </artwork>
         </figure>
       </section>
-      <section title="Example Bag Using fetch.txt">
-        <t>
-          This is the layout of a bag that expects the receiver to download the
-          files listed in the payload manifests prior to validation. Lines of
-          file content are shown with added parentheses to indicate each
-          complete line.
-          For brevity, this example uses MD5 rather than the recommended SHA-512.
-        </t>
-
-        <figure>
-          <artwork>
-highsmith-tahoe/
-|
-|   manifest-md5.txt
-|    (102b0e6effe208ef9b29864946de9e22 data/23364a.tif             )
-|
-|    fetch.txt
-|     (https://cdn.loc.gov/master/pnp/highsm/23300/23364a.tif
-|         216951362 data/23364a.tif                                )
-|
-|   bagit.txt
-|    (BagIt-version: 1.0                                           )
-|    (Tag-File-Character-Encoding: UTF-8                           )
-|
-|   bag-info.txt
-|    (Internal-Sender-Description: Download link found at          )
-|    (  https://www.loc.gov/resource/highsm.23364/                 )</artwork>
-        </figure>
       </section>
-    </section>
     <!-- /Examples -->
     <section title="Security Considerations" anchor="sec-security">
       <section title="Special Directory Characters">
@@ -901,7 +855,7 @@ highsmith-tahoe/
     There are three challenges for interoperability related to filename case:
     <list style="symbols"><t>
         Filesystems such as File Allocation Table (FAT) or Extended File
-	Allocation Table (EXFAT) always convert filenames to uppercase:
+  Allocation Table (EXFAT) always convert filenames to uppercase:
         "example.txt" will be stored as "EXAMPLE.TXT".
       </t><t>
         Many Unix filesystems save filenames exactly as provided, which allows
@@ -909,7 +863,7 @@ highsmith-tahoe/
         "Example.txt" are separate files.
       </t><t>
         New Technology File System (NTFS) and Apple's Hierarchical File System
-	(HFS) Plus usually preserve case when storing files but are
+  (HFS) Plus usually preserve case when storing files but are
         case insensitive when retrieving them. A file saved as "Example.txt"
         will be retrieved by that name but will also be retrieved as
         "EXAMPLE.TXT", "example.txt", etc.
@@ -1085,7 +1039,9 @@ definitions use the core rules (e.g., DIGIT, HEXDIG, etc) as defined in
                 <artwork type="abnf" xml:space="preserve"><![CDATA[
 bagit-txt = "BagIt-Version: " 1*DIGIT "." 1*DIGIT ending
             "Tag-File-Character-Encoding: " encoding ending
+            "Payload-Oxum: " octetstream-sum ending
 encoding  = 1*CHAR
+octetstream-sum = 1*DIGIT "." 1*DIGIT
 ending    = CR / LF / CRLF ]]></artwork>
               </figure>
       </section>
@@ -1177,14 +1133,14 @@ This document has no IANA actions.
     <references title="Informative References">
 
       <reference anchor="ENCDEP"
-	 target="https://web.archive.org/web/20060508015635/http://www.iwaw.net/05/papers/iwaw05-tabata.pdf">
+   target="https://web.archive.org/web/20060508015635/http://www.iwaw.net/05/papers/iwaw05-tabata.pdf">
         <front>
           <title>A Collaboration Model between Archival Systems to Enhance the Reliability of Preservation by an Enclose-and-Deposit Method</title>
           <author initials="K." surname="Tabata" fullname="Koichi Tabata"/>
-	  <author initials="T." surname="Okada" fullname="Takeshi Okada"/>
-	  <author initials="M." surname="Nagamori" fullname="Mitsuharu Nagamori"/>
-	  <author initials="T." surname="Sakaguchi" fullname="Tetsuo Sakaguchi"/>
-	  <author initials="S." surname="Sugimoto" fullname="Shigeo Sugimoto"/>
+    <author initials="T." surname="Okada" fullname="Takeshi Okada"/>
+    <author initials="M." surname="Nagamori" fullname="Mitsuharu Nagamori"/>
+    <author initials="T." surname="Sakaguchi" fullname="Tetsuo Sakaguchi"/>
+    <author initials="S." surname="Sugimoto" fullname="Shigeo Sugimoto"/>
           <date year="2005"/>
         </front>
         <format type="PDF" target="http://www.iwaw.net/05/papers/iwaw05-tabata.pdf"/>
@@ -1207,7 +1163,7 @@ This document has no IANA actions.
           <author><organization>Unicode Consortium</organization></author>
           <date year="2018" month="May"/>
         </front>
-	<seriesInfo name="Technical Report," value="Unicode 11.0.0"/>
+  <seriesInfo name="Technical Report," value="Unicode 11.0.0"/>
         <format type="HTML" target="http://www.unicode.org/reports/tr15/"/>
       </reference>
 
